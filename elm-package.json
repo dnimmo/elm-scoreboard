@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "summary": "A simple Scoreboard app used for learning `Elm` as part of the tutorials at http://courses.knowthen.com/courses/elm-for-beginners",
+    "summary": "A simple Scoreboard app used for learning Elm",
     "repository": "https://github.com/dnimmo/elm-scoreboard.git",
     "license": "BSD3",
     "source-directories": [
