@@ -140,8 +140,8 @@ view : Model -> Html Msg
 view model =
     div [ class "scoreboard" ]
         [ h1 [] [ text "Score Keeper" ]
+        , playerSection model
         , playerForm model
-        , p [] [ text (toString model) ]
         ]
 
 
@@ -158,6 +158,67 @@ playerForm model =
         , button [ type' "submit" ] [ text "Save" ]
         , button [ type' "button", onClick Cancel ] [ text "Cancel" ]
         ]
+
+
+playerSection : Model -> Html Msg
+playerSection model =
+    div []
+        [ playerListHeader
+        , playerList model
+        , pointTotal model
+        ]
+
+
+playerListHeader : Html Msg
+playerListHeader =
+    header []
+        [ div [] [ text "Name" ]
+        , div [] [ text "Points " ]
+        ]
+
+
+playerList : Model -> Html Msg
+playerList model =
+    ul []
+        (List.map player model.players)
+
+
+player : Player -> Html Msg
+player player =
+    li []
+        [ i
+            [ class "edit"
+            , onClick (Edit player)
+            ]
+            []
+        , div []
+            [ text player.name ]
+        , button
+            [ type' "button"
+            , onClick (Score player 2)
+            ]
+            [ text "2pts" ]
+        , button
+            [ type' "button"
+            , onClick (Score player 3)
+            ]
+            [ text "3pts" ]
+        , div []
+            [ text (toString player.points) ]
+        ]
+
+
+pointTotal : Model -> Html Msg
+pointTotal model =
+    let
+        total =
+            List.map .points model.plays
+                |> List.sum
+    in
+        footer []
+            [ div [] [ text "Total: " ]
+            , div [] [ text (toString total) ]
+            ]
 
 
 main : Program Never
