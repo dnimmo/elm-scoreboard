@@ -68,6 +68,7 @@ view model =
   div [ class "scoreboard" ]
       [ h1 [] [ text "Score Keeper" ]
       , playerForm model
+      , p [] [ text (toString model) ]
       ]
 
 
