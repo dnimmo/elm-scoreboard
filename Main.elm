@@ -56,6 +56,9 @@ update msg model =
     Input name ->
       { model | name = name }
 
+    Cancel ->
+      { model | name = initModel.name }
+
     _ ->
       model
 
