@@ -76,7 +76,7 @@ update msg model =
 
 addPlayer : List Player -> String -> List Player
 addPlayer players newPlayer =
-  { initPlayer | name = newPlayer } :: players
+  List.reverse ({ initPlayer | name = newPlayer } :: players)
 
 
 -- view
