@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import String
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -14,6 +15,7 @@ type alias Model =
   , name : String
   , playerId : Maybe Int
   , plays : List Play
+  , nextId : Int
   }
 
 
@@ -38,13 +40,7 @@ initModel =
   , name = ""
   , playerId = Nothing
   , plays = []
-  }
-
-initPlayer : Player
-initPlayer =
-  { id = 0
-  , name = ""
-  , points = 0
+  , nextId = 0
   }
 
 
@@ -64,23 +60,73 @@ update msg model =
       { model | name = name }
 
     Save ->
-      { model | players = (addPlayer model.players model.name)
-              , name = initModel.name }
+      if (String.isEmpty model.name) then
+        model
+      else
+        save model
 
     Cancel ->
-      { model | name = initModel.name }
+      { model | name = initModel.name
+              , playerId = Nothing
+      }
 
     _ ->
       model
 
+save : Model -> Model
+save model =
+  case model.playerId of
+    Just id ->
+      edit model id
 
-addPlayer : List Player -> String -> List Player
-addPlayer players newPlayer =
-  { initPlayer
-    | name = newPlayer
-    , id = List.length players
-  } :: players
+    Nothing ->
+      add model
 
+
+add : Model -> Model
+add model =
+  let
+    player =
+      Player model.nextId model.name 0
+
+    newPlayers =
+      player :: model.players
+
+  in
+    { model
+        | players = newPlayers
+        , name = ""
+        , nextId = model.nextId + 1
+    }
+
+
+edit : Model -> Int -> Model
+edit model id =
+  let
+    newPlayers =
+      List.map (\player ->
+                  if player.id == id then
+                      { player | name = model.name }
+                  else
+                    player
+               )
+               model.players
+    newPlays =
+      List.map (\play ->
+                  if play.playerId == id then
+                        { play | name = model.name }
+                  else
+                      play
+                  )
+                  model.plays
+
+  in
+    { model
+        | players = newPlayers
+        , plays = newPlays
+        , name = ""
+        , playerId = Nothing
+    }
 
 -- view
 
