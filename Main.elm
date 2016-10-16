@@ -40,6 +40,13 @@ initModel =
   , plays = []
   }
 
+initPlayer : Player
+initPlayer =
+  { id = 0
+  , name = ""
+  , points = 0
+  }
+
 
 type Msg
   = Edit Player
@@ -56,11 +63,20 @@ update msg model =
     Input name ->
       { model | name = name }
 
+    Save ->
+      { model | players = (addPlayer model.players model.name)
+              , name = initModel.name }
+
     Cancel ->
       { model | name = initModel.name }
 
     _ ->
       model
+
+
+addPlayer : List Player -> String -> List Player
+addPlayer players newPlayer =
+  { initPlayer | name = newPlayer } :: players
 
 
 -- view
