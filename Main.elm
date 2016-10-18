@@ -281,19 +281,26 @@ playerList : Model -> Html Msg
 playerList model =
     model.players
         |> List.sortBy .name
-        |> List.map player
+        |> List.map (player (model.playerId /= Nothing))
         |> ul []
 
 
-player : Player -> Html Msg
-player player =
+player : Bool -> Player -> Html Msg
+player isEditMode player =
     li []
         [ i
             [ class "edit"
             , onClick (Edit player)
             ]
             []
-        , div [ class "" ]
+        , div
+            [ class
+                (if isEditMode then
+                    "edit"
+                 else
+                    ""
+                )
+            ]
             [ text player.name ]
         , button
             [ type' "button"
