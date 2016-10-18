@@ -80,8 +80,8 @@ update msg model =
                 , playerId = Nothing
             }
 
-        _ ->
-            model
+        DeletePlay play ->
+            deletePlay model play
 
 
 score : Model -> Player -> Int -> Model
@@ -165,6 +165,35 @@ edit model id =
         }
 
 
+deletePlay : Model -> Play -> Model
+deletePlay model play =
+    let
+        newPlays =
+            List.filter (\p -> p.id /= play.id) model.plays
+
+        newPlayers =
+            List.map
+                (\player ->
+                    if player.id == play.playerId then
+                        { player | points = player.points - 1 * play.points }
+                    else
+                        player
+                )
+                model.players
+    in
+        { model | plays = newPlays, players = newPlayers }
+
+
+editModeClasses : Model -> String -> String
+editModeClasses model baseClasses =
+    case model.playerId of
+        Nothing ->
+            baseClasses
+
+        Just id ->
+            baseClasses ++ " edit"
+
+
 
 -- view
 
@@ -175,6 +204,7 @@ view model =
         [ h1 [] [ text "Score Keeper" ]
         , playerSection model
         , playerForm model
+        , playSection model
         ]
 
 
@@ -182,7 +212,8 @@ playerForm : Model -> Html Msg
 playerForm model =
     Html.form [ onSubmit Save ]
         [ input
-            [ type' "text"
+            [ class (editModeClasses model "")
+            , type' "text"
             , placeholder "Add/Edit Player..."
             , onInput Input
             , value model.name
@@ -190,6 +221,42 @@ playerForm model =
             []
         , button [ type' "submit" ] [ text "Save" ]
         , button [ type' "button", onClick Cancel ] [ text "Cancel" ]
+        ]
+
+
+playSection : Model -> Html Msg
+playSection model =
+    div []
+        [ playListHeader
+        , playList model
+        ]
+
+
+playListHeader : Html Msg
+playListHeader =
+    header []
+        [ div [] [ text "Plays" ]
+        , div [] [ text "Points" ]
+        ]
+
+
+playList : Model -> Html Msg
+playList model =
+    model.plays
+        |> List.map play
+        |> ul []
+
+
+play : Play -> Html Msg
+play play =
+    li []
+        [ i
+            [ class "remove"
+            , onClick (DeletePlay play)
+            ]
+            []
+        , div [] [ text play.name ]
+        , div [] [ text (toString play.points) ]
         ]
 
 
@@ -226,7 +293,7 @@ player player =
             , onClick (Edit player)
             ]
             []
-        , div []
+        , div [ class "" ]
             [ text player.name ]
         , button
             [ type' "button"
